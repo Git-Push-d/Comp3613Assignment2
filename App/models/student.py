@@ -19,7 +19,7 @@ class Student(User):
        super().__init__(username, email, password, role="student")
 
     def __repr__(self):
-        return f"[Student ID= {self.student_id:<3}  Name= {self.username:<10} Email= {self.email}]"
+        return f"[Student ID= {str(self.student_id):<3}  Name= {self.username:<10} Email= {self.email}]"
     
     def get_json(self):
         return{
