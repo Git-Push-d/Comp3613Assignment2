@@ -18,7 +18,8 @@ class Staff(User):
        super().__init__(username, email, password, role="staff")
 
     def __repr__(self):
-        return f"[Staff ID= {self.staff_id:<3} Name= {self.username:<10} Email= {self.email}]"
+        
+        return f"[Staff ID= {str(self.staff_id):<3} Name= {self.username:<10} Email= {self.email}]"
     
     def get_json(self):
         return{
@@ -54,5 +55,6 @@ class Staff(User):
         request.status = 'denied'
         db.session.commit()
         return True
+    
     
     

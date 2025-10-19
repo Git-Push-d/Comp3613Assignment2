@@ -327,3 +327,37 @@ def viewLeaderboard():
     print("\n")
 
 app.cli.add_command(staff_cli) # add the group to the cli
+
+
+
+# '''
+# Test Commands
+# '''
+
+# test = AppGroup('test', help='Testing commands') 
+
+# @test.command("unit", help="Run User tests")
+# def unit_tests_command():
+    
+#     sys.exit(pytest.main(["-k", "UserUnitTests or StudentUnitTests or StaffUnitTests or RequestUnitTests or LoggedHoursUnitTests"]))
+    
+# app.cli.add_command(test)
+
+'''
+Test Commands
+'''
+
+test = AppGroup('test', help='Testing commands') 
+
+@test.command("user", help="Run User tests")
+@click.argument("type", default="all")
+def user_tests_command(type):
+    if type == "unit":
+        sys.exit(pytest.main(["-k", "UserUnitTests or StudentUnitTests or StaffUnitTests or RequestUnitTests or LoggedHoursUnitTests"]))
+    elif type == "int":
+        sys.exit(pytest.main(["-k", "UserIntegrationTests or StudentIntegrationTests or StaffIntegrationTests "]))
+    else:
+        sys.exit(pytest.main(["-k", "App"]))
+
+
+app.cli.add_command(test)
