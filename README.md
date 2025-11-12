@@ -8,3 +8,7 @@ Task: #2 Setup Git Repository
 Branch: task/1 setup trello board 
 Member: Dominique Chotack
 Task: #1 Trello Board Setup 
+
+Branch: task/3 choose design pattern 
+Member: Reena Sookdar
+Task: #3 Choose Design Pattern 
