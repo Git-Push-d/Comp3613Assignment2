@@ -20,3 +20,7 @@ Task #5 Update UML Diagram
 Branch: task/4-update-use-case-diagram
 Member: Britney Romain
 Task: #4 Update Use Case Diagram
+
+Branch: task/6-sprint1report
+Member: Britney Romain
+Task #6 Sprint 1 Report
