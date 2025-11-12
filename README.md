@@ -16,3 +16,7 @@ Task: #3 Choose Design Pattern
 Branch: task/5 update uml diagram 
 Member: Reena Sookdar 
 Task #5 Update UML Diagram
+
+Branch: task/4-update-use-case-diagram
+Member: Britney Romain
+Task: #4 Update Use Case Diagram
