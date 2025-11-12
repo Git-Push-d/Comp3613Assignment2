@@ -12,3 +12,7 @@ Task: #1 Trello Board Setup
 Branch: task/3 choose design pattern 
 Member: Reena Sookdar
 Task: #3 Choose Design Pattern 
+
+Branch: task/5 update uml diagram 
+Member: Reena Sookdar 
+Task #5 Update UML Diagram
