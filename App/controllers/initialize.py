@@ -1,4 +1,4 @@
-from App.models import User, Student, Staff, Request
+from App.models import Student, Staff, Request
 from App.database import db
 
 
@@ -38,9 +38,17 @@ def initialize_db(drop_first=True):
 
     staff_members = []
     for username, email, pwd in staff_data:
-        st = Staff(username=username, email=email, password=pwd)
+        st = Staff(username=username, email=email, password=pwd, department="Student Affairs")
         staff_members.append(st)
         db.session.add(st)
+
+    db.session.commit()
+
+    # Create StudentRecord for each student (students now have IDs from commit)
+    from App.models.studentrecord import StudentRecord
+    for student in students:
+        record = StudentRecord(student_id=student.student_id)
+        db.session.add(record)
 
     db.session.commit()
 
@@ -59,12 +67,21 @@ def initialize_db(drop_first=True):
     # Add logged hours
     from App.models import LoggedHours
 
-    # Approve first two requests and create logged entries
+    # Approve first two requests and create logged entries using Observer pattern
     for i, req in enumerate(requests[:2]):
         req.status = 'approved'
         staff_member = staff_members[i % len(staff_members)]
         log = LoggedHours(student_id=req.student_id, staff_id=staff_member.user_id, hours=req.hours, status='approved')
         db.session.add(log)
+
+        # Trigger Observer pattern
+        student_record = StudentRecord.query.filter_by(student_id=req.student_id).first()
+        if student_record:
+            student_record.add_hours(
+                hours=req.hours,
+                description=f"Request approved: {req.hours} hours",
+                logged_by=staff_member.username
+            )
 
     # Deny the third request (if present)
     if len(requests) >= 3:
@@ -72,7 +89,7 @@ def initialize_db(drop_first=True):
 
     # Leave the fourth request pending
 
-    # Add 3 extra logged hours entries (to reach 6 total logged hours)
+    # Add 3 extra logged hours entries using Observer pattern
     extra_logs = [
         (students[0].user_id, staff_members[0].user_id, 3.5, 'approved'),
         (students[1].user_id, staff_members[1].user_id, 7.0, 'approved'),
@@ -81,6 +98,16 @@ def initialize_db(drop_first=True):
     for student_id, staff_id, hours, status in extra_logs:
         log = LoggedHours(student_id=student_id, staff_id=staff_id, hours=hours, status=status)
         db.session.add(log)
+
+        # Trigger Observer pattern
+        student_record = StudentRecord.query.filter_by(student_id=student_id).first()
+        if student_record:
+            staff_member = Staff.query.filter_by(staff_id=staff_id).first()
+            student_record.add_hours(
+                hours=hours,
+                description=f"Additional hours logged: {hours} hours",
+                logged_by=staff_member.username if staff_member else "Staff"
+            )
 
     db.session.commit()
 
@@ -129,7 +156,7 @@ def initialize(drop_first=True):
 #         Staff(name='Mr. Smith', email='mr.smith@gmail.com'),
 #         Staff(name='Ms. Johnson', email='ms.johnson@hotmail.com'),
 #         Staff(name='Mr. Lee', email='mr.lee@gmail.com'),
-        
+
 #     ]
 #     for staff_member in staff_members:
 #         db.session.add(staff_member)
@@ -159,5 +186,4 @@ def initialize(drop_first=True):
 #             req.status = 'denied'
 #     db.session.commit()
 
-    
-    
+
