@@ -15,11 +15,13 @@ class ActivityEntry(db.Model):
     logged_by = db.Column(db.String(100), nullable=False)  # Staff name or "System"
     timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
-    def __init__(self, student_record_id, hours, description, logged_by):
+    def __init__(self, student_record_id, hours, description, logged_by, date=None):
         self.student_record_id = student_record_id
         self.hours = hours
         self.description = description
         self.logged_by = logged_by
+        if date:
+            self.timestamp = date
 
     def get_json(self):
         return {
