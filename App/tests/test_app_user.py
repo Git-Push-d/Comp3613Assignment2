@@ -19,21 +19,41 @@ class MockObserver:
 
 
 '''
-   Unit Tests - Task #8 (Dominique)
+   Unit Tests - Task #8 
 '''
 class TestStudentRecord(unittest.TestCase):
     """Unit tests for StudentRecord model (Subject in Observer Pattern)"""
 
     def test_add_hours(self):
-        """Test StudentRecord.addHours() method increments total_hours"""
-        record = StudentRecord(student_id=1)
-        record.total_hours = 0
-        record._observers = []
+        """Test StudentRecord.add_hours() method increments total_hours and notifies observers"""
+        # Create in-memory SQLite database for testing
+        app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
         
-        old_hours = record.total_hours
-        record.total_hours += 5
-        
-        assert record.total_hours == 5
+        with app.app_context():
+            db.create_all()
+            
+            # Create and persist StudentRecord
+            record = StudentRecord(student_id=1)
+            db.session.add(record)
+            db.session.commit()
+            
+            # Attach mock observer
+            observer = MockObserver()
+            record.attach(observer)
+            
+            old_hours = record.total_hours
+            # Call the actual add_hours method
+            result = record.add_hours(hours=5.0, description="Test hours", logged_by="TestStaff")
+            
+            # Assert hours were incremented by the method
+            assert record.total_hours == old_hours + 5.0, f"Expected {old_hours + 5.0}, got {record.total_hours}"
+            # Assert the method returns the record (for chaining)
+            assert result is record
+            # Assert observer was notified
+            assert observer.updated_called == True, "Observer was not notified"
+            
+            db.session.close()
+            db.drop_all()
 
     def test_attach_detach_observer(self):
         """Test attach/detach logic for Observer pattern"""
@@ -85,16 +105,21 @@ class TestStaff(unittest.TestCase):
     Integration Tests - Task #8 (Dominique)
 '''
 
-@pytest.fixture(autouse=True, scope="module")
-def empty_db():
-    app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
-    create_db()
-    yield app.test_client()
-    db.drop_all()
-
-
 class TestIntegration(unittest.TestCase):
     """Integration tests for Request approval and Observer notification"""
+
+    def setUp(self):
+        """Set up test database and app context before each test"""
+        self.app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+        self.app_context = self.app.app_context()
+        self.app_context.push()
+        db.create_all()
+
+    def tearDown(self):
+        """Clean up after each test"""
+        db.session.remove()
+        db.drop_all()
+        self.app_context.pop()
 
     def test_request_accept_increments_total_hours(self):
         """Test Request.accept() leading to StudentRecord.totalHours increment"""
