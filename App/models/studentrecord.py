@@ -1,5 +1,6 @@
 from App.database import db
 from datetime import datetime
+from sqlalchemy.orm.attributes import flag_modified
 
 class StudentRecord(db.Model):
     """
@@ -36,6 +37,9 @@ class StudentRecord(db.Model):
 
     def notify_observers(self):
         """Notify all observers of state change"""
+        # Handle case where _observers might not be initialized (when loaded from DB)
+        if not hasattr(self, '_observers'):
+            self._observers = []
         for observer in self._observers:
             observer.update(self)
 
@@ -83,6 +87,8 @@ class StudentRecord(db.Model):
             if new_total >= threshold and old_total < threshold:
                 if milestone_name not in self.accolades:
                     self.accolades.append(milestone_name)
+                    # Mark the JSON field as modified so SQLAlchemy tracks the change
+                    flag_modified(self, 'accolades')
                     # Add milestone achievement to activity history
                     self.add_activity_entry(
                         hours=0,

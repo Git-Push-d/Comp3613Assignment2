@@ -48,13 +48,41 @@ class Student(User):
     # Method to get accolades from StudentRecord
     def get_accolades(self):
         """Get accolades from student record"""
+        # Ensure student record is synced with approved hours
+        self._sync_student_record()
         if self.student_record:
             return self.student_record.accolades
         return []
 
     def get_total_hours(self):
         """Get total hours from student record"""
+        # Ensure student record is synced with approved hours
+        self._sync_student_record()
         if self.student_record:
             return self.student_record.total_hours
         return 0.0
+
+    def _sync_student_record(self):
+        """Sync student record with approved logged hours"""
+        if not self.student_record:
+            from App.models import StudentRecord
+            self.student_record = StudentRecord(student_id=self.student_id)
+            db.session.add(self.student_record)
+            # Commit to get the student_record.id before adding hours
+            db.session.commit()
+
+        # Calculate total approved hours from LoggedHours
+        approved_hours = sum(lh.hours for lh in self.loggedhours if lh.status == 'approved')
+
+        # Update student record if hours have changed
+        if self.student_record.total_hours != approved_hours:
+            # Use the add_hours method to properly update accolades
+            hours_to_add = approved_hours - self.student_record.total_hours
+            if hours_to_add > 0:
+                self.student_record.add_hours(hours_to_add, "System sync", "System")
+            elif hours_to_add < 0:
+                # Handle case where hours were reduced
+                self.student_record.total_hours = approved_hours
+                db.session.commit()
+
 
