@@ -97,12 +97,15 @@ class StudentRecord(db.Model):
                     )
 
     def get_json(self):
+        from App.models.activityentry import ActivityEntry
+        activity_count = ActivityEntry.query.filter_by(student_record_id=self.id).count()
+
         return {
             'id': self.id,
             'student_id': self.student_id,
             'total_hours': self.total_hours,
             'accolades': self.accolades,
-            'activity_count': len(self.activity_history)
+            'activity_count': activity_count
         }
 
     def __repr__(self):

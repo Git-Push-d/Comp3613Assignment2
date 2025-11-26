@@ -36,6 +36,20 @@ def fetch_accolades(student_id): #fetch accolades for a student
     accolades = student.get_accolades()
     return accolades
 
+def initialize_observers_for_record(student_record):
+    """Initialize and attach observers to a student record"""
+    from App.models import MilestoneObserver, ActivityHistoryObserver
+
+    # Create observer instances
+    milestone_observer = MilestoneObserver()
+    activity_observer = ActivityHistoryObserver()
+
+    # Attach observers to the record
+    student_record.attach(milestone_observer)
+    student_record.attach(activity_observer)
+
+    return student_record
+
 def generate_leaderboard():
     students = Student.query.all()
     leaderboard = []
@@ -54,3 +68,4 @@ def generate_leaderboard():
 def get_all_students_json():
     students = Student.query.all()
     return [student.get_json() for student in students]
+

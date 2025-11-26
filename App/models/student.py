@@ -8,7 +8,7 @@ class Student(User):
 
     # Relationships
     student_record = db.relationship('StudentRecord', backref='student', uselist=False, lazy=True, cascade="all, delete-orphan")
-    loggedhours = db.relationship('LoggedHours', backref='student', lazy=True, cascade="all, delete-orphan")
+    loggedhours = db.relationship('LoggedHours', backref='student', lazy=True)
     requests = db.relationship('Request', backref='student', lazy=True, cascade="all, delete-orphan")
 
     #Inheritance setup
@@ -66,23 +66,31 @@ class Student(User):
         """Sync student record with approved logged hours"""
         if not self.student_record:
             from App.models import StudentRecord
+            from App.models import MilestoneObserver, ActivityHistoryObserver
+
             self.student_record = StudentRecord(student_id=self.student_id)
+
+            # Attach observers
+            milestone_observer = MilestoneObserver()
+            activity_observer = ActivityHistoryObserver()
+            self.student_record.attach(milestone_observer)
+            self.student_record.attach(activity_observer)
+
             db.session.add(self.student_record)
-            # Commit to get the student_record.id before adding hours
             db.session.commit()
 
+        # Refresh the student instance to ensure loggedhours is populated
+        db.session.refresh(self)
+
         # Calculate total approved hours from LoggedHours
-        approved_hours = sum(lh.hours for lh in self.loggedhours if lh.status == 'approved')
+        # Query LoggedHours directly to avoid RelationshipProperty iteration issues
+        from App.models import LoggedHours
+        logged_hours_list = LoggedHours.query.filter_by(student_id=self.student_id).all()
+        approved_hours = sum(lh.hours for lh in logged_hours_list if lh.status == 'approved')
 
         # Update student record if hours have changed
         if self.student_record.total_hours != approved_hours:
             # Use the add_hours method to properly update accolades
             hours_to_add = approved_hours - self.student_record.total_hours
-            if hours_to_add > 0:
-                self.student_record.add_hours(hours_to_add, "System sync", "System")
-            elif hours_to_add < 0:
-                # Handle case where hours were reduced
-                self.student_record.total_hours = approved_hours
-                db.session.commit()
-
+            self.student_record.add_hours(hours_to_add, "System sync", "System")
 

@@ -37,10 +37,17 @@ Run all tests:
 pytest -v
 ```
 
-Run specific test file:
+Run specific test file for Unit & Integration Testing for User + Subject Models:
 ```bash
 pytest App/tests/test_app.py -v
 ```
+
+
+Run specific test file for Unit & Integration Testing for Observer System:
+```bash
+pytest App/tests/test_observer_pattern.py -v
+```
+
 
 Run by test type using Flask CLI:
 ```bash
@@ -49,11 +56,6 @@ flask test user unit     # Unit tests only
 flask test user int      # Integration tests only
 ```
 
-## Available Commands
-
-See [readme.md](readme.md) for a complete list of CLI commands for students, staff, and administrators.
-
----
 
 ## Project Contributors
 
@@ -80,4 +82,3 @@ Task: #4 Update Use Case Diagram
 Branch: task/6-sprint1report
 Member: Britney Romain
 Task #6 Sprint 1 Report
-
