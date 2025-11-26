@@ -4,7 +4,7 @@ from App.models import Student,Request,LoggedHours
 from.index import index_views
 from App.controllers.student_controller import get_all_students_json,fetch_accolades,create_hours_request
 from App.controllers.staff_controller import process_request_approval,process_request_denial
-from App import db
+from App.database import db
 
 staff_views = Blueprint('staff_views', __name__, template_folder='../templates')
 
@@ -21,9 +21,9 @@ def accept_request_action():
     req = Request.query.get(data['request_id'])
     if not req:
         return jsonify(message='Request not found'), 404
-    
+
     process_request_approval(user.staff_id, data['request_id'])
-    
+
     return jsonify(message='Request accepted'), 200
 
 @staff_views.route('/api/deny_request', methods=['PUT'])
