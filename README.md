@@ -92,3 +92,7 @@ Task #16 API Specification for Sprint 2
 Branch: task/17-diagram-for-system-design
 Member: Reena Sookdar
 Task #17 Diagram for System Design
+
+Branch: task/18-update-model-diagram
+Member: Reena Sookdar 
+Task: #18 Update Model Diagram
