@@ -5,8 +5,8 @@ from App.database import db
 from datetime import  datetime
 
 #Submit pending test
-def test_submit_pending(app):
-    with app.app_context():
+def test_submit_pending(test_app):
+    with test_app.app_context():
       req = Request(studentID=1, hours=10, description="Test request")
       req.submit()
       assert req.status == 'pending'
@@ -14,12 +14,24 @@ def test_submit_pending(app):
       assert isinstance(req.timestamp, datetime)
 
 #Accept request test
-def test_accept_request(app):
-   with app.app_context():
+def test_accept_request(test_app):
+   with test_app.app_context():
      req = Request(studentID=Student.student_id, hours=3)
      req.submit()
 
      req.accept(Staff)
      assert req.status == "accepted"
      assert req.staffID == Staff.staff_id
+
+#Deny request test
+def test_deny_request(test_app):
+   with test_app.app_context():
+     req = Request(studentID=Student.student_id, hours=2)
+     req.submit()
+
+     req.deny(Staff)
+     assert req.status == "denied"
+     assert req.staffID == Staff.staff_id
+
+#Cancel request test
 
