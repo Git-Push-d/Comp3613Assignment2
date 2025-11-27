@@ -9,6 +9,8 @@ A Flask-based platform for tracking and rewarding student participation through 
 Dependencies will be automatically installed when you run the app on Replit. If running locally, install them with:
 
 ```bash
+pip install --upgrade pip setuptools wheel
+
 pip install -r requirements.txt
 ```
 
@@ -82,3 +84,4 @@ Task: #4 Update Use Case Diagram
 Branch: task/6-sprint1report
 Member: Britney Romain
 Task #6 Sprint 1 Report
+

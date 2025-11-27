@@ -13,15 +13,29 @@ class Request(db.Model):
     hours = db.Column(db.Float, nullable=False)
     description = db.Column(db.String(500), nullable=True)
 
-    def __init__(self, studentID, hours, description=None):
-        self.studentID = studentID
+    def __init__(self, studentID=None, hours=None, description=None, status='pending', student_id=None):
+        self.studentID = studentID if studentID is not None else student_id
         self.hours = hours
         self.description = description
-        self.status = 'pending'
+        self.status = status
         self.timestamp = datetime.utcnow()
 
+    @property
+    def student_id(self):
+        """Backwards compatibility property for snake_case access"""
+        return self.studentID
+    
+    @student_id.setter
+    def student_id(self, value):
+        self.studentID = value
+
+    @property
+    def id(self):
+        """Backwards compatibility property for id access"""
+        return self.requestID
+
     def __repr__(self):
-        return f"<Request ID={self.requestID} Student={self.studentID} Hours={self.hours} Status={self.status}>"
+        return f"<RequestID={self.requestID} StudentID={self.studentID} Hours={self.hours} Status={self.status}>"
 
     def get_json(self):
         return {
