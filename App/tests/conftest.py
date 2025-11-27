@@ -10,7 +10,7 @@ def test_app():
             'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:',
         })
     with app.app_context():
-        db.create_all()      # <-- THIS FIXES THE ERROR
+        db.create_all()     
         yield app
         db.session.remove()
         db.drop_all()
