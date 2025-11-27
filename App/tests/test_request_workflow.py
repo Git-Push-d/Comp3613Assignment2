@@ -17,7 +17,7 @@ def setup_users(test_app):
     db.session.commit()
     
     #Test staff users
-    staff = Staff(username='teststaff', email='staff@test.com', password='password', department='Test Dept')
+    staff = Staff(username='teststaff', email='staff@test.com', password='password')
     db.session.add(staff)
     db.session.flush()
     
