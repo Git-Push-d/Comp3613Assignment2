@@ -34,4 +34,11 @@ def test_deny_request(test_app):
      assert req.staffID == Staff.staff_id
 
 #Cancel request test
+def test_cancel_request(test_app):
+   with test_app.app_context():
+     req = Request(studentID=1, hours=2)
+     req.submit()
+     req.cancel()
+     
+     assert req.status  ==  "canceled"
 
