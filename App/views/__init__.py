@@ -6,7 +6,7 @@ from .auth import auth_views
 from .admin import setup_admin
 from .student import student_views
 from .staff import staff_views
+from .request import request_views
 
-
-views = [user_views, index_views, auth_views, student_views, staff_views] 
+views = [user_views, index_views, auth_views, student_views, staff_views, request_views] 
 # blueprints must be added to this list

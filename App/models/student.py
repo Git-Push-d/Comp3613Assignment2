@@ -40,7 +40,7 @@ class Student(User):
     # Method for student to request hours
     def request_hours_confirmation(self, hours):
         from App.models import Request
-        request = Request(student_id=self.student_id, hours=hours, status='pending')
+        request = Request(studentID=self.student_id, hours=hours, status='pending')
         db.session.add(request)
         db.session.commit()
         return request
@@ -93,4 +93,3 @@ class Student(User):
             # Use the add_hours method to properly update accolades
             hours_to_add = approved_hours - self.student_record.total_hours
             self.student_record.add_hours(hours_to_add, "System sync", "System")
-
