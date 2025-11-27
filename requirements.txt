@@ -1,5 +1,5 @@
 Flask==2.3.3
-Fla=sk-SQLAlchemy=3.1.1
+Flask-SQLAlchemy==3.1.1
 Flask-Migrate==3.1.0
 Flask-Reuploaded==1.2.0
 Flask-Cors==3.0.10
