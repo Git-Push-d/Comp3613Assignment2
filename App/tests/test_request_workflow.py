@@ -45,27 +45,27 @@ def setup_users(test_app):
 def test_submit_pending(test_app, setup_users):
   student, staff, _ = setup_users
   with test_app.app_context():
-    req = Request(studentID=student.student_id, hours=10, description="Test request")
+    req = Request(student_id=student.student_id, hours=10, description="Test request")
     req.submit()
     assert req.status == "pending"
     assert req.timestamp is not None
     assert isinstance(req.timestamp, datetime)
 
 #Accept request test
-  def test_accept_request(test_app, setup_users):
-     student, staff, _ = setup_users
-     with test_app.app_context():
+def test_accept_request(test_app, setup_users):
+  student, staff, _ = setup_users
+  with test_app.app_context():
   
-       db.session.query(Request).delete()
-       db.session.commit()
+    db.session.query(Request).delete()
+    db.session.commit()
 
-       req = Request(studentID=student.student_id, hours=3)
-       req.submit()
+    req = Request(student_id=student.student_id, hours=3)
+    req.submit()
 
-       req.accept(staff) 
+    req.accept(staff) 
 
-       assert req.status == "approved" 
-       assert req.staffID == staff.staff_id
+    assert req.status == "approved" 
+    assert req.staffID == staff.staff_id
 
 # Deny request test
 def test_deny_request(test_app, setup_users):
