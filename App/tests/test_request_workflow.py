@@ -12,4 +12,14 @@ def test_submit_pending(app):
       assert req.status == 'pending'
       assert req.timestamp is not None
       assert isinstance(req.timestamp, datetime)
-      
+
+#Accept request test
+def test_accept_request(app):
+   with app.app_context():
+     req = Request(studentID=Student.student_id, hours=3)
+     req.submit()
+
+     req.accept(Staff)
+     assert req.status == "accepted"
+     assert req.staffID == Staff.staff_id
+
