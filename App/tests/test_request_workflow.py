@@ -42,3 +42,14 @@ def test_cancel_request(test_app):
      
      assert req.status  ==  "canceled"
 
+#Timestamp present test
+def test_timestamp_present(test_app):
+   with test_app.app_context():
+     req = Request(studentID=1, hours=1)
+     req.submit()
+     assert req.timestamp is not None
+     assert isinstance(req.timestamp, datetime)
+
+
+#Integration Testing
+#
