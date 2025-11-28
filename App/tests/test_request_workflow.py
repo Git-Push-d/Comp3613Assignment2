@@ -121,39 +121,30 @@ def test_accept_updates_student_records(test_app, setup_users):
   student, staff, _ = setup_users 
   with test_app.app_context():
     db.session.query(Request).delete()
-    db.session.query(LoggedHours).delete()
+    db.session.query(ActivityEntry).delete()  # Changed from LoggedHours
     db.session.commit()
-
     student_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
-
     if student_record is None:
       raise Exception("StudentRecord object missing, database setup failed.") 
-
+      
     student_record.total_hours = 0
     db.session.commit()
-
-    #Create and submit the request directly
+    
     request_hours = 3.5
     req = Request(student_id=student.student_id, hours=request_hours, description="Community Service")
     req.submit()
-
-    #Verify pending status
+    
     assert req.status == "pending"
-
-    #Accept the request
+    
     req.accept(staff)
     db.session.commit()
-
     db.session.expire_all()
 
-    #Confirm LoggedHours record exists
-    logged_hours_entry = LoggedHours.query.filter_by(student_id=student.student_id).order_by(LoggedHours.id.desc()).first()
-    assert logged_hours_entry is not None 
-    assert logged_hours_entry.hours == request_hours
-
-    #Confirm StudentRecord total_hours updated
+    activity_entry = ActivityEntry.query.filter_by(student_record_id=student_record.id).order_by(ActivityEntry.id.desc()).first()
+    assert activity_entry is not None 
+    assert activity_entry.hours == request_hours
     updated_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
-    assert updated_record is not None, "StudentRecord disappeared after accept/commit"
+    assert updated_record is not None
     assert updated_record.total_hours == request_hours
 
 def test_denied_does_not_update_hours(test_app, setup_users):
