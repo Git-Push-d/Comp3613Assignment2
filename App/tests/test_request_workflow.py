@@ -118,24 +118,26 @@ def test_timestamp_present(test_app, setup_users):
 # INTEGRATION TESTS
 
 def test_accept_updates_student_records(test_app, setup_users):
-  student, staff, student_record = setup_users
+  student, staff, _ = setup_users
 
   with test_app.app_context():
-
+    student_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
     student_record.total_hours = 0
     db.session.commit()
 
     #Create and submit the request directly
     request_hours = 3.5
     req = Request(student_id=student.student_id, hours=request_hours, description="Community Service")
-    req.submit()
+    req.submit() # Status should be 'pending'
 
     #Verify pending status
     assert req.status == "pending"
 
-    #Accept the request 
+    #Accept the request (This should trigger the hour update logic)
     req.accept(staff)
     db.session.commit()
+
+    db.session.expire_all()
 
     #Confirm LoggedHours record exists
     logged_hours_entry = LoggedHours.query.filter_by(student_id=student.student_id).order_by(LoggedHours.id.desc()).first()
