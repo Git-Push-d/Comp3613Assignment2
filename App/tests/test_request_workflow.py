@@ -118,25 +118,27 @@ def test_timestamp_present(test_app, setup_users):
 # INTEGRATION TESTS
 
 def test_accept_updates_student_records(test_app, setup_users):
-  student, staff, _ = setup_users
+  student, staff, student_record = setup_users 
 
   with test_app.app_context():
-    student_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
+    if student_record is None:
+      raise Exception("StudentRecord object missing from fixture setup.") 
+
     student_record.total_hours = 0
     db.session.commit()
 
     #Create and submit the request directly
     request_hours = 3.5
     req = Request(student_id=student.student_id, hours=request_hours, description="Community Service")
-    req.submit() # Status should be 'pending'
+    req.submit()
 
-    #Verify pending status
+      #Verify pending status
     assert req.status == "pending"
 
-    #Accept the request (This should trigger the hour update logic)
+    #Accept the request 
     req.accept(staff)
     db.session.commit()
-
+    
     db.session.expire_all()
 
     #Confirm LoggedHours record exists
