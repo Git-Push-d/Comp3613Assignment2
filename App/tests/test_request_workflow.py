@@ -4,7 +4,7 @@ from App.models import Request, Student, Staff, StudentRecord, LoggedHours, Acti
 from App.database import db
 from datetime import datetime
 
-# FIXTURE – creates student & staff for all tests
+#FIXTURE – creates student & staff for all tests
 @pytest.fixture(scope="function")
 def setup_users(test_app):
   with test_app.app_context():
@@ -17,14 +17,14 @@ def setup_users(test_app):
     db.session.query(Staff).delete()
     db.session.commit()
 
-    # Create Staff and Student
+    #Create Staff and Student
     staff = Staff(username='teststaff', email='staff@test.com', password='password')
     student = Student(username='teststudent', email='student@test.com', password='password')
 
     db.session.add_all([staff, student])
     db.session.commit()
 
-    # Re-query to get fully persistent instances (avoid detached/partial objects)
+    #Re-query to get fully persistent instances
     staff = Staff.query.filter_by(username="teststaff").first()
     student = Student.query.filter_by(username="teststudent").first()
 
@@ -39,19 +39,19 @@ def setup_users(test_app):
     db.session.add(student_record)
     db.session.commit()
 
-    # Verify creation succeeded
+    #Verify creation succeeded
     student_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
     assert student_record is not None, "StudentRecord failed to create in fixture"
 
     yield student, staff, student_record
 
-            # Teardown
+    #Teardown
     db.session.remove()
     #db.drop_all()
 
 
-# UNIT TESTS
-
+#UNIT TESTS
+#Test Request Submit
 def test_submit_pending(test_app, setup_users):
   student, staff, _ = setup_users
   with test_app.app_context():
@@ -61,7 +61,7 @@ def test_submit_pending(test_app, setup_users):
     assert req.timestamp is not None
     assert isinstance(req.timestamp, datetime)
 
-
+#Test Accept Request
 def test_accept_request(test_app, setup_users):
   student, staff, _ = setup_users
   with test_app.app_context():
@@ -77,7 +77,7 @@ def test_accept_request(test_app, setup_users):
     assert req.status == "approved"
     assert req.staffID == staff.staff_id
 
-
+#Test Deny Request
 def test_deny_request(test_app, setup_users):
   student, staff, _ = setup_users
   with test_app.app_context():
@@ -92,7 +92,7 @@ def test_deny_request(test_app, setup_users):
     assert req.status == "denied"
     assert req.staffID == staff.staff_id
 
-
+#Test Cancel Request
 def test_cancel_request(test_app, setup_users):
   student, staff, _ = setup_users
   with test_app.app_context():
@@ -106,7 +106,7 @@ def test_cancel_request(test_app, setup_users):
 
     assert req.status == "canceled"
 
-
+#Test Timestamp
 def test_timestamp_present(test_app, setup_users):
   student, staff, _ = setup_users
   with test_app.app_context():
@@ -115,38 +115,48 @@ def test_timestamp_present(test_app, setup_users):
     assert req.timestamp is not None
     assert isinstance(req.timestamp, datetime)
 
-# INTEGRATION TESTS
-
+    
+#INTEGRATION TESTS
+#Test Accept Updates Student Record
 def test_accept_updates_student_records(test_app, setup_users):
   student, staff, _ = setup_users 
   with test_app.app_context():
     db.session.query(Request).delete()
-    db.session.query(ActivityEntry).delete()  # Changed from LoggedHours
+    db.session.query(ActivityEntry).delete()
     db.session.commit()
+    
+    #Retrieve the student's record created in the fixture
     student_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
     if student_record is None:
       raise Exception("StudentRecord object missing, database setup failed.") 
       
     student_record.total_hours = 0
     db.session.commit()
-    
+
+    #Create a new request
     request_hours = 3.5
     req = Request(student_id=student.student_id, hours=request_hours, description="Community Service")
+
+    #Submit the request
     req.submit()
-    
     assert req.status == "pending"
-    
+
+    #Staff accepts the request
     req.accept(staff)
     db.session.commit()
+    
     db.session.expire_all()
 
     activity_entry = ActivityEntry.query.filter_by(student_record_id=student_record.id).order_by(ActivityEntry.id.desc()).first()
+    
     assert activity_entry is not None 
     assert activity_entry.hours == request_hours
+    
     updated_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
     assert updated_record is not None
     assert updated_record.total_hours == request_hours
 
+#Test Deny Does Not Update Student Record
 def test_denied_does_not_update_hours(test_app, setup_users):
   student, staff, student_record = setup_users
 
