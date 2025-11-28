@@ -96,3 +96,7 @@ Task #17 Diagram for System Design
 Branch: task/18-update-model-diagram
 Member: Reena Sookdar 
 Task: #18 Update Model Diagram
+
+Branch: task/19-review-use-case-diagram
+Member: Britney Romain
+Task: #19 Review Use Case Diagram
