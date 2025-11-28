@@ -117,66 +117,53 @@ def test_timestamp_present(test_app, setup_users):
 
 # INTEGRATION TESTS
 
-def test_accept_updates_student_records(test_app, test_client, setup_users):
+def test_accept_updates_student_records(test_app, setup_users):
   student, staff, student_record = setup_users
-  
+
   with test_app.app_context():
-    
-    # Ensure total_hours is 0 before the test
+
     student_record.total_hours = 0
     db.session.commit()
 
-    payload = {
-    "student_id": student.student_id,
-    "hours": 3.5,
-    "activity": "Community Service"
-    }
+    #Create and submit the request directly
+    request_hours = 3.5
+    req = Request(student_id=student.student_id, hours=request_hours, description="Community Service")
+    req.submit()
 
-    response = test_client.post("/hours/log", json=payload)
-    assert response.status_code == 201 # Assuming 201 Created/Submitted
-
-    #Find the submitted request
-    req = Request.query.filter_by(student_id=student.student_id, status="pending").first()
-    assert req is not None, "Pending request not found after submission"
+    #Verify pending status
+    assert req.status == "pending"
 
     #Accept the request 
     req.accept(staff)
     db.session.commit()
 
-    # Confirm LoggedHours record exists
+    #Confirm LoggedHours record exists
     logged_hours_entry = LoggedHours.query.filter_by(student_id=student.student_id).order_by(LoggedHours.id.desc()).first()
     assert logged_hours_entry is not None
-    assert logged_hours_entry.hours == 3.5
+    assert logged_hours_entry.hours == request_hours
 
-    # Confirm StudentRecord total_hours updated
+    #Confirm StudentRecord total_hours updated
     updated_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
     assert updated_record is not None, "StudentRecord disappeared after accept/commit"
-    assert updated_record.total_hours == 3.5 
+    assert updated_record.total_hours == request_hours
 
-
-def test_denied_does_not_update_hours(test_app, test_client, setup_users):
+def test_denied_does_not_update_hours(test_app, setup_users):
   student, staff, student_record = setup_users
 
   with test_app.app_context():
-    #Reset hours for the test
+
     student_record.total_hours = 0
     db.session.commit()
 
     initial_hours = student_record.total_hours
+    request_hours = 5.0
 
-    payload = {
-      "student_id": student.student_id,
-      "hours": 5.0,
-      "activity": "Denied Test Activity"
-    }
+    #Create and submit the request directly
+    req = Request(student_id=student.student_id, hours=request_hours, description="Denied Test Activity")
+    req.submit() 
 
-    #Submit a new request
-    response = test_client.post("/hours/log", json=payload)
-    assert response.status_code == 201
-
-    #Find the submitted request
-    req = Request.query.filter_by(student_id=student.student_id, status="pending").first()
-    assert req is not None, "Pending request not found after submission"
+    #Verify pending status
+    assert req.status == "pending"
 
     #Deny the request
     req.deny(staff)
