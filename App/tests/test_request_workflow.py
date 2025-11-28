@@ -32,7 +32,7 @@ def setup_users(test_app):
       raise RuntimeError("Failed to create test student or staff")
 
 #    student._sync_student_record()   # this will create StudentRecord if missing
-    db.session.commit()
+#    db.session.commit()
 
     student_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
     student_record = StudentRecord(student_id=student.student_id)
@@ -47,7 +47,7 @@ def setup_users(test_app):
 
             # Teardown
     db.session.remove()
-    db.drop_all()
+    #db.drop_all()
 
 
 # UNIT TESTS
@@ -117,44 +117,73 @@ def test_timestamp_present(test_app, setup_users):
 
 # INTEGRATION TESTS
 
-def test_accept_updates_student_records(test_client, setup_users):
+def test_accept_updates_student_records(test_app, test_client, setup_users):
   student, staff, student_record = setup_users
-  payload = {
+  
+  with test_app.app_context():
+    
+    # Ensure total_hours is 0 before the test
+    student_record.total_hours = 0
+    db.session.commit()
+
+    payload = {
     "student_id": student.student_id,
     "hours": 3.5,
     "activity": "Community Service"
-  }
+    }
 
-  response = test_client.post("/hours/log", json=payload)
-  assert response.status_code == 201
+    response = test_client.post("/hours/log", json=payload)
+    assert response.status_code == 201 # Assuming 201 Created/Submitted
 
-  #Confirm LoggedHours record exists
-  entry = LoggedHours.query.filter_by(student_id=student.student_id).first()
-  assert entry is not None
-  assert entry.hours == 3.5
+    #Find the submitted request
+    req = Request.query.filter_by(student_id=student.student_id, status="pending").first()
+    assert req is not None, "Pending request not found after submission"
 
-  # Confirm StudentRecord total_hours updated
-  updated_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
-  assert updated_record.total_hours == 3.5
+    #Accept the request 
+    req.accept(staff)
+    db.session.commit()
+
+    # Confirm LoggedHours record exists
+    logged_hours_entry = LoggedHours.query.filter_by(student_id=student.student_id).order_by(LoggedHours.id.desc()).first()
+    assert logged_hours_entry is not None
+    assert logged_hours_entry.hours == 3.5
+
+    # Confirm StudentRecord total_hours updated
+    updated_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
+    assert updated_record is not None, "StudentRecord disappeared after accept/commit"
+    assert updated_record.total_hours == 3.5 
 
 
-def test_denied_does_not_update_hours(test_client, setup_users):
+def test_denied_does_not_update_hours(test_app, test_client, setup_users):
   student, staff, student_record = setup_users
 
-  # Manually insert logged hours
-  log1 = LoggedHours(student_id=student.student_id, hours=2)
-  log2 = LoggedHours(student_id=student.student_id, hours=4)
+  with test_app.app_context():
+    #Reset hours for the test
+    student_record.total_hours = 0
+    db.session.commit()
 
-  db.session.add_all([log1, log2])
-  db.session.commit()
+    initial_hours = student_record.total_hours
 
-  # Update StudentRecord total
-  student_record.total_hours = 6
-  db.session.commit()
+    payload = {
+      "student_id": student.student_id,
+      "hours": 5.0,
+      "activity": "Denied Test Activity"
+    }
 
-  response = test_client.get(f"/hours/total/{student.student_id}")
-  assert response.status_code == 200
+    #Submit a new request
+    response = test_client.post("/hours/log", json=payload)
+    assert response.status_code == 201
 
-  data = response.get_json()
-  assert "total_hours" in data
-  assert data["total_hours"] == 6
+    #Find the submitted request
+    req = Request.query.filter_by(student_id=student.student_id, status="pending").first()
+    assert req is not None, "Pending request not found after submission"
+
+    #Deny the request
+    req.deny(staff)
+    db.session.commit()
+
+    #Confirm StudentRecord total_hours remains unchanged
+    updated_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
+    assert updated_record is not None, "StudentRecord disappeared after deny/commit"
+    assert updated_record.total_hours == initial_hours
+    assert updated_record.total_hours == 0

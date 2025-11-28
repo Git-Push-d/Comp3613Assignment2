@@ -14,3 +14,8 @@ def test_app():
         yield app
         db.session.remove()
         db.drop_all()
+
+@pytest.fixture(scope="function")
+def test_client(test_app):
+    """Provides a test client for making requests against the test_app."""
+    return test_app.test_client()
