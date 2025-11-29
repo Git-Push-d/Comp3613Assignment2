@@ -1,63 +1,106 @@
-## About the Student Incentive Platform
+# Student Incentive App – Group Git Push'd
 
-This platform helps tertiary institutions track and reward student participation by capturing volunteer or co-curricular hours, validating them through staff approvals, and converting approved time into accolades and leaderboard rankings. It is implemented with Flask and exposes both a command-line interface (CLI) for administrative tasks and lightweight web views for manual review and browsing.
+A Flask-based platform for tracking and rewarding student participation through volunteer or co-curricular hours.
 
-Key capabilities:
-- Student hour requests: students submit hours for confirmation.
-- Staff review workflow: staff members can approve or deny requests; approvals automatically log hours.
-- Accolades & leaderboards: students earn accolades and are ranked by approved hours.
-- Reporting utilities: CLI commands to list users, staff, students, requests, and logged hours.
+## Setup Instructions
 
-Interfaces:
-- CLI: `flask` commands for initialization, user/staff/student management, and test execution.
-- Web views: basic HTML templates and static assets for viewing lists, messages, and admin pages.
+### 1. Install Dependencies
 
-Intended users: administrators, staff reviewers, and students at educational institutions who need a simple system to record and validate participation hours.
-## General App Commands
+Dependencies will be automatically installed when you run the app on Replit. If running locally, install them with:
 
-| Command | Description |
-|---------|-------------|
-| `flask init` | Creates and initializes the database |
-| `flask listUsers` | Lists all users in the database |
-| `flask listStaff` | Lists all staff in the database |
-| `flask listStudents` | Lists all students in the database |
-| `flask listRequests` | Lists all requests in the database |
-| `flask listApprovedRequests` | Lists all approved requests |
-| `flask listPendingRequests` | Lists all pending requests |
-| `flask listDeniedRequests` | Lists all denied requests |
-| `flask listloggedHours` | Lists all logged hours |
+```bash
+pip install --upgrade pip setuptools wheel
 
----
+pip install -r requirements.txt
+```
+
+### 2. Initialize the Database
+
+```bash
+flask init
+```
+
+This creates the database and sets up initial data.
+
+### 3. Run the Application
+
+Click the **Run** button in Replit, or use:
+
+```bash
+flask run
+```
+
+The app will be available at the URL shown in the webview.
+
+## Running Tests
+
+Run all tests:
+```bash
+pytest -v
+```
+
+Run specific test file for Unit & Integration Testing for User + Subject Models:
+```bash
+pytest App/tests/test_app.py -v
+```
 
 
-## Student Commands
-
-| Command | Description |
-|---------|-------------|
-| `flask student create` | Create a new student (interactive: enter name + email) |
-| `flask student hours` | View total hours (enter student ID) |
-| `flask student requestHours` | Request hour confirmation (enter student ID + hours) |
-| `flask student viewmyRequests` | List all requests made by a student (enter student ID) |
-| `flask student viewmyAccolades` | List all accolades earned by a student (enter student ID) |
-| `flask student viewLeaderboard` | View leaderboard of students ranked by approved hours |
+Run specific test file for Unit & Integration Testing for Observer System:
+```bash
+pytest App/tests/test_observer_pattern.py -v
+```
 
 
----
+Run by test type using Flask CLI:
+```bash
+flask test user          # All tests
+flask test user unit     # Unit tests only
+flask test user int      # Integration tests only
+```
 
-## Staff Commands
 
-| Command | Description |
-|---------|-------------|
-| `flask staff create` | Create a new staff member (interactive: enter name + email) |
-| `flask staff requests` | View all pending requests |
-| `flask staff approveRequest` | Approve a student’s request (enter staff ID + request ID) → logs hours |
-| `flask staff denyRequest` | Deny a student’s request (enter staff ID + request ID) |
-| `flask staff viewLeaderboard` | View leaderboard of students ranked by approved hours |
+## Project Contributors
 
----
+Branch: task/2-setup-git-repository  
+Member: Nailah Lewis
+Task: #2 Setup Git Repository
 
-## Tests
+Branch: task/1 setup trello board 
+Member: Dominique Chotack
+Task: #1 Trello Board Setup 
 
-Run unit and integration tests via the Flask CLI testing command. Example commands:
+Branch: task/3 choose design pattern 
+Member: Reena Sookdar
+Task: #3 Choose Design Pattern 
 
-- `flask test user int` — or - `flask test user unit` — or `flask test user` — runs tests related to the `user` tests, including both integration (`int`) and unit (`unit`) scopes.
+Branch: task/5 update uml diagram 
+Member: Reena Sookdar 
+Task #5 Update UML Diagram
+
+Branch: task/4-update-use-case-diagram
+Member: Britney Romain
+Task: #4 Update Use Case Diagram
+
+Branch: task/6-sprint1report
+Member: Britney Romain
+Task #6 Sprint 1 Report
+
+Branch: task/16-API-Specification-for-Sprint-2
+Member: Nailah Lewis
+Task #16 API Specification for Sprint 2
+
+Branch: task15-trello governance
+Member: Dominique Chot5ack
+Task:   #15 Trello Governance
+
+Branch: task/17-diagram-for-system-design
+Member: Reena Sookdar
+Task #17 Diagram for System Design
+
+Branch: task/18-update-model-diagram
+Member: Reena Sookdar 
+Task: #18 Update Model Diagram
+
+Branch: task/19-review-use-case-diagram
+Member: Britney Romain
+Task: #19 Review Use Case Diagram
