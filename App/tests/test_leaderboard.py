@@ -120,17 +120,21 @@ def test_full_integration_leaderboard(test_app):
      student_record = StudentRecord(student_id=student.student_id)
      db.session.add(student_record)
      db.session.commit()
+
+     student_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
      assert student_record.total_hours == 0.0
 
      # Student submits a request for 5 hours
-     request = Request(student_id=student.student_id, hours=5.0)
-     assert request.status == "pending"
-
-     # Staff approves the request
-     request.approve_request(staff)
+     request = Request(student_id=student.student_id, hours=5.0, status='pending')
+     db.session.add(request)
      db.session.commit()
 
-     # Verify hours were updated
+     request = Request.query.filter_by(student_id=student.student_id).first()
+     assert request.status == 'pending'
+    
+     # Staff approves the request
+     staff.approve_request(request)
+
      updated_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
      assert updated_record.total_hours == 5.0
 
