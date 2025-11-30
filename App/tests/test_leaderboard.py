@@ -1,6 +1,7 @@
 import pytest 
 from App.models import Student, StudentRecord, Leaderboard
 from App.database import db
+from App.models import Request, Staff
 
 def test_leaderboard_ranking_accuracy(test_app):
 
@@ -30,6 +31,8 @@ def test_leaderboard_ranking_accuracy(test_app):
     assert rankings[1]['student_id'] == student3.student_id
     assert rankings[2]['student_id'] == student2.student_id
 
+
+
 def test_leaderbaord_tie_handling(test_app):
 
     """Test that leaderboard handles ties in total hours correctly"""
@@ -57,3 +60,41 @@ def test_leaderbaord_tie_handling(test_app):
      # Verify both students are ranked equally
          assert rankings[0]['student_id'] < rankings[1]['student_id']  
      # Assuming lower ID comes first
+
+
+
+def test_leaderboard_updates_after_requestapproval(test_app):
+    
+     """Test that leaderboard updates after a request is approved"""
+
+     with test_app.app_context():
+          # Create test student and staff
+          student = Student(username="leaderboard_student", email="leaderboard@example.com", password="pass123")
+          staff = Staff(username="leaderboard_staff", email="leaderboard_staff@example.com", password="pass123")
+          db.session.add_all([student, staff])
+          db.session.commit()
+
+     # Create student record
+     student_record = StudentRecord(student_id=student.student_id)
+     db.session.add(student_record)
+     db.session.commit
+
+     # Student submits a request 
+     request = Request(student_id=student.student_id, hours=15.0, status='pending')
+     db.session.add(request)
+     db.session.commit()
+
+     # Staff approves the request
+     staff.approve_request(request)
+     db.session.commit()
+
+     # Refresh record 
+     updated_record = StudentRecord.query.filter_by(student_id=student.student_id).first()  
+     assert updated_record.total_hours == 15.0
+
+      # Leaderboard should reflect the updated hours
+     ranking = Leaderboard.get_student_rank(student.student_id)
+     assert ranking['total_hours'] == 15.0
+     assert ranking['rank'] == 1
+    
+    
