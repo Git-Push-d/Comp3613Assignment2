@@ -85,22 +85,19 @@ Branch: task/6-sprint1report
 Member: Britney Romain
 Task #6 Sprint 1 Report
 
-Branch: task/16-API-Specification-for-Sprint-2
-Member: Nailah Lewis
-Task #16 API Specification for Sprint 2
+BrancH: task13-Implement API and Leaderboard Model
+Member: Dominique Chotack
+Task:   #13 Implement Api and Leaderboard Model
+
 
 Branch: task15-trello governance
-Member: Dominique Chot5ack
+Member: Dominique Chotack
 Task:   #15 Trello Governance
 
-Branch: task/17-diagram-for-system-design
-Member: Reena Sookdar
-Task #17 Diagram for System Design
+Branch: task/16-API-Specification-for-Sprint-2 Member: Nailah Lewis Task #16 API Specification for Sprint 2
 
-Branch: task/18-update-model-diagram
-Member: Reena Sookdar 
-Task: #18 Update Model Diagram
+Branch: task/17-diagram-for-system-design Member: Reena Sookdar Task #17 Diagram for System Design
 
-Branch: task/19-review-use-case-diagram
-Member: Britney Romain
-Task: #19 Review Use Case Diagram
+Branch: task/18-update-model-diagram Member: Reena Sookdar Task: #18 Update Model Diagram
+
+Branch: task/19-review-use-case-diagram Member: Britney Romain Task: #19 Review Use Case Diagram
