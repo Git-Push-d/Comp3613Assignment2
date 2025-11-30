@@ -99,5 +99,39 @@ def test_leaderboard_updates_after_requestapproval(test_app):
      ranking = Leaderboard.get_student_rank(student.student_id)
      assert ranking['total_hours'] == 15.0
      assert ranking['rank'] == 1
+
+
+
+def test_full_integration_leaderboard(test_app):
     
-    
+     """Full integration test for leaderboard functionality Student submits request → Staff approves → Hours increase → Leaderboard updates."""
+
+     with test_app.app_context():
+          # Create test student and staff
+          student = Student(username="full_integration_student", email="full_integration@example.com", password="pass123")
+          staff = Staff(username="full_integration_staff", email="full_integration_staff@example.com", password="pass123")
+          db.session.add_all([student, staff])
+          db.session.commit()
+
+     # Create student record start with 0 hours
+     student_record = StudentRecord(student_id=student.student_id)
+     db.session.add(student_record)
+     db.session.commit()
+     assert student_record.total_hours == 0.0
+
+     # Student submits a request for 5 hours
+     request = Request(student_id=student.student_id, hours=5.0)
+     assert request.status == "pending"
+
+     # Staff approves the request
+     request.approve_request(staff)
+     db.session.commit()
+
+     # Verify hours were updated
+     updated_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
+     assert updated_record.total_hours == 5.0
+
+     # Verify leaderboard reflects the update
+     ranking = Leaderboard.get_student_rank(student.student_id)
+     assert ranking['total_hours'] == 5.0
+     assert ranking['rank'] == 1
