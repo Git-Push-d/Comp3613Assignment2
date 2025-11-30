@@ -103,42 +103,47 @@ def test_leaderboard_updates_after_requestapproval(test_app):
 
 
 def test_full_integration_leaderboard(test_app):
-    
-     """Full integration test for leaderboard functionality Student submits request → Staff approves → Hours increase → Leaderboard updates."""
+    """Full integration test for leaderboard functionality:
+    Student submits request → Staff approves → Hours increase → Leaderboard updates."""
 
-     with test_app.app_context():
-          # Create test student and staff
-          student = Student(username="full_integration_student", email="full_integration@example.com", password="pass123")
-          staff = Staff(username="full_integration_staff", email="full_integration_staff@example.com", password="pass123")
-          db.session.add_all([student, staff])
-          db.session.commit()
+    with test_app.app_context():
+        # Create test student and staff
+        student = Student(username="full_integration_student", email="full_integration@example.com", password="pass123")
+        staff = Staff(username="full_integration_staff", email="full_integration_staff@example.com", password="pass123")
+        db.session.add_all([student, staff])
+        db.session.commit()
 
-          student = Student.query.filter_by(username="full_integration_student").first()
-          staff = Staff.query.filter_by(username="full_integration_staff").first()
+        # Re-query to attach instances to session
+        student = Student.query.filter_by(username="full_integration_student").first()
+        staff = Staff.query.filter_by(username="full_integration_staff").first()
 
-     # Create student record start with 0 hours
-     student_record = StudentRecord(student_id=student.student_id)
-     db.session.add(student_record)
-     db.session.commit()
+        # Create student record with 0 hours
+        student_record = StudentRecord(student_id=student.student_id)
+        db.session.add(student_record)
+        db.session.commit()
 
-     student_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
-     assert student_record.total_hours == 0.0
+        # Re-query to avoid DetachedInstanceError
+        student_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
+        assert student_record.total_hours == 0.0
 
-     # Student submits a request for 5 hours
-     request = Request(student_id=student.student_id, hours=5.0, status='pending')
-     db.session.add(request)
-     db.session.commit()
+        # Student submits a request for 5 hours
+        request = Request(student_id=student.student_id, hours=5.0, status='pending')
+        db.session.add(request)
+        db.session.commit()
 
-     request = Request.query.filter_by(student_id=student.student_id).first()
-     assert request.status == 'pending'
-    
-     # Staff approves the request
-     staff.approve_request(request)
+        # Re-query to attach to session
+        request = Request.query.filter_by(student_id=student.student_id, hours=5.0).first()
+        assert request is not None, "Request was not created in the database"
+        assert request.status == 'pending'
 
-     updated_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
-     assert updated_record.total_hours == 5.0
+        # Staff approves the request
+        staff.approve_request(request)
 
-     # Verify leaderboard reflects the update
-     ranking = Leaderboard.get_student_rank(student.student_id)
-     assert ranking['total_hours'] == 5.0
-     assert ranking['rank'] == 1
+        # Re-query student_record to check updated hours
+        updated_record = StudentRecord.query.filter_by(student_id=student.student_id).first()
+        assert updated_record.total_hours == 5.0
+
+        # Verify leaderboard reflects the update
+        ranking = Leaderboard.get_student_rank(student.student_id)
+        assert ranking['total_hours'] == 5.0
+        assert ranking['rank'] == 1
