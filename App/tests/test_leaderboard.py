@@ -101,7 +101,7 @@ def test_leaderboard_updates_after_requestapproval(test_app):
 
 
 def test_full_integration_leaderboard(test_app): 
-    """Full integration test for leaderboard functionality: 
+    """Full integration test for leaderboard functionality:
     Student submits request → Staff approves → Hours increase → Leaderboard updates.
     """ 
     
@@ -122,22 +122,19 @@ def test_full_integration_leaderboard(test_app):
             student_record = StudentRecord(student_id=student.student_id)
             db.session.add(student_record)
             db.session.commit() 
-            student_record = StudentRecord.query.filter_by(student_id=student.student_id).first() 
         
         assert student_record.total_hours == 0.0 
 
-        # Student submits a request for 5 hours using the model's submit method 
-        request = Request(student_id=student.student_id, hours=5.0, description="Test full integration")
-        #db.session.add(request)
-        #db.session.commit() 
-        request.submit() 
+        # Student submits a request for 5 hours
+        request = Request(studentID=student.student_id, hours=5.0, description="Test full integration")
+        request.submit()  # This commits automatically
 
-        # Re-query to ensure it's persisted 
-        request = Request.query.filter_by(student_id=student.student_id, hours=5.0).first()  # Fixed: Changed studentID to student_id
-        assert request is not None, "Request was not created in the database" 
+        # Re-query using the correct column name
+        request = Request.query.filter_by(studentID=student.student_id, hours=5.0).first()
+        assert request is not None, "Request was not created in the database"
         assert request.status == "pending" 
         
-        # Staff approves the request using the model's accept method 
+        # Staff approves the request
         request.accept(staff) 
 
         # Verify that StudentRecord was updated
