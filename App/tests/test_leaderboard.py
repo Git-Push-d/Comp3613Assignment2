@@ -74,6 +74,8 @@ def test_leaderboard_updates_after_requestapproval(test_app):
           db.session.add_all([student, staff])
           db.session.commit()
 
+          student = Student.query.filter_by(username="leaderboard_student").first()
+         
      # Create student record
      student_record = StudentRecord(student_id=student.student_id)
      db.session.add(student_record)
