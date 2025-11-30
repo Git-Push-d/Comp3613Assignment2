@@ -8,3 +8,4 @@ from .activityentry import ActivityEntry
 from .observer import Observer
 from .milestoneobserver import MilestoneObserver
 from .activityhistoryobserver import ActivityHistoryObserver
+from .leaderboard import Leaderboard
