@@ -127,7 +127,9 @@ def test_full_integration_leaderboard(test_app):
         assert student_record.total_hours == 0.0 
 
         # Student submits a request for 5 hours using the model's submit method 
-        request = Request(student_id=student.student_id, hours=5.0, description="Test full integration") 
+        request = Request(student_id=student.student_id, hours=5.0, description="Test full integration")
+        db.session.add(request)
+        db.session.commit() 
         request.submit() 
 
         # Re-query to ensure it's persisted 
