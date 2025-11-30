@@ -113,6 +113,9 @@ def test_full_integration_leaderboard(test_app):
           db.session.add_all([student, staff])
           db.session.commit()
 
+          student = Student.query.filter_by(username="full_integration_student").first()
+          staff = Staff.query.filter_by(username="full_integration_staff").first()
+
      # Create student record start with 0 hours
      student_record = StudentRecord(student_id=student.student_id)
      db.session.add(student_record)
