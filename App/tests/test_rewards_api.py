@@ -111,3 +111,30 @@ def test_activity_history_entries(app, client, users):
   assert len(hist["activities"]) >= 1
 
 
+# test 4
+def test_no_duplicate_accolades(app, client, users):
+
+# Crossing same milestone twice should not duplicate accolades
+  
+  student, staff, _ = users
+
+  login(client, "student", "student123")
+  r = client.post("/api/requests", json={"hours": 8, "description": "A"})
+  id1 = r.get_json()["request"]["requestID"]
+
+  login(client, "staff", "staff123")
+  client.put(f"/api/requests/{id1}/approve")
+
+  login(client, "student", "student123")
+  r = client.post("/api/requests", json={"hours": 5, "description": "B"})
+  id2 = r.get_json()["request"]["requestID"]
+
+  login(client, "staff", "staff123")
+  client.put(f"/api/requests/{id2}/approve")
+
+  login(client, "student", "student123")
+  acc = client.get("/api/accolades").get_json()
+
+  assert acc.count("10 Hours Milestone") == 1
+
+
