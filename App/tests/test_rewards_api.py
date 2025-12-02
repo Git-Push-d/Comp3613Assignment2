@@ -25,7 +25,7 @@ def client(app):
 
 @pytest.fixture
 def users(app):
-    """Create clean student + staff + record"""
+    # Create clean student record , student and staff 
     with app.app_context():
         db.session.query(ActivityEntry).delete()
         db.session.query(Request).delete()
@@ -54,6 +54,7 @@ def login(client, username, password):
 def test_approve_updates_milestone(app, client, users):
   
 # Approve request → hours added → milestone unlocked
+  
   student, staff, _ = users
 
   login(client, "student", "student123")
@@ -67,5 +68,28 @@ def test_approve_updates_milestone(app, client, users):
   acc = client.get("/api/accolades").get_json()
 
   assert "10 Hours Milestone" in acc
+
+
+# test 2
+def test_accolades_correct_list(app, client, users):
+  
+# Ensure accolades endpoint returns correct medals
+  
+  student, staff, _ = users
+
+  login(client, "student", "student123")
+  r = client.post("/api/requests", json={"hours": 15, "description": "Work"})
+  req_id = r.get_json()["request"]["requestID"]
+
+  login(client, "staff", "staff123")
+  client.put(f"/api/requests/{req_id}/approve")
+
+  login(client, "student", "student123")
+  acc = client.get("/api/accolades").get_json()
+
+  assert "10 Hours Milestone" in acc
+
+
+
 
 
