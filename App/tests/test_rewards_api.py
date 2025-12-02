@@ -49,3 +49,23 @@ def login(client, username, password):
       content_type="application/json"
   )
 
+
+# test 1
+def test_approve_updates_milestone(app, client, users):
+  
+# Approve request → hours added → milestone unlocked
+  student, staff, _ = users
+
+  login(client, "student", "student123")
+  r = client.post("/api/requests", json={"hours": 12, "description": "Task"})
+  req_id = r.get_json()["request"]["requestID"]
+
+  login(client, "staff", "staff123")
+  client.put(f"/api/requests/{req_id}/approve")
+
+  login(client, "student", "student123")
+  acc = client.get("/api/accolades").get_json()
+
+  assert "10 Hours Milestone" in acc
+
+
