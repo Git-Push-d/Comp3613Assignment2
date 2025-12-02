@@ -90,6 +90,24 @@ def test_accolades_correct_list(app, client, users):
   assert "10 Hours Milestone" in acc
 
 
+# test 3
+def test_activity_history_entries(app, client, users): 
 
+# Approval should add activity entries (hours + milestone)
+
+  student, staff, _ = users
+
+  login(client, "student", "student123")
+  r = client.post("/api/requests", json={"hours": 12, "description": "Clean"})
+  req_id = r.get_json()["request"]["requestID"]
+
+  login(client, "staff", "staff123")
+  client.put(f"/api/requests/{req_id}/approve")
+
+  login(client, "student", "student123")
+  hist = client.get("/api/activity_history").get_json()
+
+  assert hist["total_hours"] >= 12
+  assert len(hist["activities"]) >= 1
 
 
