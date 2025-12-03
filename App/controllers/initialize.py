@@ -115,7 +115,7 @@ def initialize_db(drop_first=True):
     result = {
         'students': [s.user_id for s in students],
         'staff': [st.user_id for st in staff_members],
-        'requests': [r.id for r in Request.query.order_by(Request.id).all()],
+        'requests': [r.requestID for r in Request.query.order_by(Request.requestID).all()],
         'logged_hours': [l.id for l in LoggedHours.query.order_by(LoggedHours.id).all()]
     }
 

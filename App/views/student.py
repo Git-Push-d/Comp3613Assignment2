@@ -27,9 +27,9 @@ def get_activity_history():
     user = jwt_current_user
     if user.role != 'student':
         return jsonify(message='Access forbidden: Not a student'), 403
-    
+
     student_record = StudentRecord.query.filter_by(student_id=user.student_id).first()
-    
+
     if not student_record:
         return jsonify({
             'message': 'No activity history found',
@@ -37,11 +37,11 @@ def get_activity_history():
             'activity_count': 0,
             'activities': []
         }), 200
-    
+
     activities = ActivityEntry.query.filter_by(
         student_record_id=student_record.id
     ).order_by(ActivityEntry.timestamp.desc()).all()
-    
+
     return jsonify({
         'student_id': user.student_id,
         'total_hours': student_record.total_hours,
@@ -60,19 +60,19 @@ def get_leaderboard():
     user = jwt_current_user
     if user.role != 'student':
         return jsonify(message='Access forbidden: Not a student'), 403
-    
+
     limit = request.args.get('limit', default=10, type=int)
-    
+
     if limit <= 0:
         limit = 10
     elif limit > 100:
         limit = 100
-    
+
     top_students = Leaderboard.get_top_students(limit=limit)
     all_rankings = Leaderboard.recalculate_rankings()
-    
+
     current_user_rank = Leaderboard.get_student_rank(user.student_id)
-    
+
     return jsonify({
         'total_students': len(all_rankings),
         'showing': len(top_students),
@@ -88,6 +88,12 @@ def make_request_action():
         return jsonify(message='Access forbidden: Not a student'), 403
     data = request.json
     if not data or 'hours' not in data:
-        return jsonify(message='Invalid request data'), 400
-    request_2 = create_hours_request(user.student_id, data['hours'])
+        return jsonify(message='Missing required field: hours'), 400
+    try:
+        hours = float(data['hours'])
+    except (TypeError, ValueError):
+        return jsonify(message='Invalid hours value: must be a number'), 400
+    if hours <= 0:
+        return jsonify(message='Invalid hours value: must be greater than 0'), 400
+    request_2 = create_hours_request(user.student_id, hours)
     return jsonify(request_2.get_json()), 201

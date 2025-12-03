@@ -22,7 +22,7 @@ Page/Action Routes
 @jwt_required()
 def identify_page():
     return render_template('message.html', title="Identify", message=f"You are logged in as {current_user.id} - {current_user.username}")
-    
+
 
 @auth_views.route('/login', methods=['POST'])
 def login_action():
@@ -50,6 +50,8 @@ API Routes
 @auth_views.route('/api/login', methods=['POST'])
 def user_login_api():
   data = request.json
+  if not data or 'username' not in data or 'password' not in data:
+    return jsonify(message='Missing required fields: username and password'), 400
   token = login(data['username'], data['password'])
   if not token:
     return jsonify(message='bad username or password given'), 401
