@@ -361,3 +361,7 @@ def user_tests_command(type):
 
 
 app.cli.add_command(test)
+
+# Run the server when executed directly
+if __name__ == "__main__":
+    app.run(host="127.0.0.1", port=5000, debug=True)
