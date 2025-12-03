@@ -130,3 +130,7 @@ Task: #22 Final System Design Documentation
 Branch: task/21-Final-Use-Case-Documentation
 Member: Britney Romain
 Task: #21 Final Use Case Documentation
+
+Branch: task/26-Final-API-Specification
+Member: Britney Romain
+Task: #26 Final API Specification
