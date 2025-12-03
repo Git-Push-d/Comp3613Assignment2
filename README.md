@@ -44,10 +44,32 @@ Run specific test file for Unit & Integration Testing for User + Subject Models:
 pytest App/tests/test_app.py -v
 ```
 
+Run specific test file for Unit & Integration Testing for User Models:
+```bash
+pytest App/tests/test_app_user.py -v
+```
 
 Run specific test file for Unit & Integration Testing for Observer System:
 ```bash
 pytest App/tests/test_observer_pattern.py -v
+```
+
+
+Run specific test file for Unit & Integration Testing for Request Workflow:
+```bash
+pytest App/tests/test_request_workflow.py -v
+```
+
+
+Run specific test file for Unit & Integration Testing Leaderboard + Full Python Integration:
+```bash
+pytest App/tests/test_leaderboard.py -v
+```
+
+
+Run specific test file for Unit & Integration Testing for Rewards:
+```bash
+pytest App/tests/test_rewards_api.py -v
 ```
 
 

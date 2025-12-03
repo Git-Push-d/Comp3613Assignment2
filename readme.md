@@ -1,103 +1,71 @@
-# Student Incentive App – Group Git Push'd
+# Student Incentive App
 
-A Flask-based platform for tracking and rewarding student participation through volunteer or co-curricular hours.
+## Overview
+A Flask-based web application for managing student incentive programs. Students can log hours for activities and earn accolades based on milestones. Staff members can approve or deny hour requests.
 
-## Setup Instructions
 
-### 1. Install Dependencies
+## Key Features
+- **Observer Pattern**: Used for milestone tracking and activity history
+- **Role-Based Access Control (RBAC)**: Students and Staff have different permissions
+- **JWT Authentication**: Token-based auth for API endpoints
 
-Dependencies will be automatically installed when you run the app on Replit. If running locally, install them with:
+## API Endpoints
 
+### Authentication
+- `POST /api/login` - Login with username/password, returns JWT token
+- `GET /api/identify` - Get current logged-in user info
+- `GET /api/logout` - Logout and clear cookies
+
+### Student Endpoints (requires student role)
+- `POST /api/make_request` - Submit hours request
+- `GET /api/accolades` - View earned accolades
+- `GET /api/leaderboard` - View student leaderboard
+- `GET /api/activity_history` - View activity history
+
+### Staff Endpoints (requires staff role)
+- `GET /api/pending_requests` - View pending requests
+- `PUT /api/approve_request` - Approve a request
+- `PUT /api/deny_request` - Deny a request
+
+## Running the Application
+
+### Development
 ```bash
-pip install --upgrade pip setuptools wheel
-
-pip install -r requirements.txt
+flask --app wsgi:app run --host=0.0.0.0 --port=5000
 ```
 
-### 2. Initialize the Database
-
+### Production
 ```bash
-flask init
+gunicorn --bind 0.0.0.0:5000 --reuse-port wsgi:app
 ```
 
-This creates the database and sets up initial data.
-
-### 3. Run the Application
-
-Click the **Run** button in Replit, or use:
-
+### Initialize Database
 ```bash
-flask run
+flask --app wsgi:app init
 ```
 
-The app will be available at the URL shown in the webview.
-
-## Running Tests
-
-Run all tests:
+### Run Tests
 ```bash
 pytest -v
 ```
 
-Run specific test file for Unit & Integration Testing for User + Subject Models:
-```bash
-pytest App/tests/test_app.py -v
-```
+## Test Users (after initialization)
+### Students
+- alice/password1
+- bob/password2
+- charlie/password3
+- diana/password4
+- eve/password5
 
+### Staff
+- msmith/staffpass1
+- mjohnson/staffpass2
+- mlee/staffpass3
 
-Run specific test file for Unit & Integration Testing for Observer System:
-```bash
-pytest App/tests/test_observer_pattern.py -v
-```
-
-
-Run by test type using Flask CLI:
-```bash
-flask test user          # All tests
-flask test user unit     # Unit tests only
-flask test user int      # Integration tests only
-```
-
-
-## Project Contributors
-
-Branch: task/2-setup-git-repository  
-Member: Nailah Lewis
-Task: #2 Setup Git Repository
-
-Branch: task/1 setup trello board 
-Member: Dominique Chotack
-Task: #1 Trello Board Setup 
-
-Branch: task/3 choose design pattern 
-Member: Reena Sookdar
-Task: #3 Choose Design Pattern 
-
-Branch: task/5 update uml diagram 
-Member: Reena Sookdar 
-Task #5 Update UML Diagram
-
-Branch: task/4-update-use-case-diagram
-Member: Britney Romain
-Task: #4 Update Use Case Diagram
-
-Branch: task/6-sprint1report
-Member: Britney Romain
-Task #6 Sprint 1 Report
-
-BrancH: task13-Implement API and Leaderboard Model
-Member: Dominique Chotack
-Task:   #13 Implement Api and Leaderboard Model
-
-
-Branch: task15-trello governance
-Member: Dominique Chotack
-Task:   #15 Trello Governance
-
-Branch: task/16-API-Specification-for-Sprint-2 Member: Nailah Lewis Task #16 API Specification for Sprint 2
-
-Branch: task/17-diagram-for-system-design Member: Reena Sookdar Task #17 Diagram for System Design
-
-Branch: task/18-update-model-diagram Member: Reena Sookdar Task: #18 Update Model Diagram
-
-Branch: task/19-review-use-case-diagram Member: Britney Romain Task: #19 Review Use Case Diagram
+## Dependencies
+- Flask 2.3.3
+- Flask-SQLAlchemy 3.1.1
+- Flask-JWT-Extended 4.4.4
+- Flask-Cors 3.0.10
+- Flask-Admin 1.6.1
+- Gunicorn 20.1.0

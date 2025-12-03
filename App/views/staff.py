@@ -17,9 +17,9 @@ def get_pending_requests():
     user = jwt_current_user
     if user.role != 'staff':
         return jsonify(message='Access forbidden: Not a staff member'), 403
-    
+
     pending_requests = Request.query.filter_by(status='pending').all()
-    
+
     return jsonify({
         'count': len(pending_requests),
         'requests': [req.get_json() for req in pending_requests]
@@ -35,19 +35,19 @@ def approve_request_action():
     user = jwt_current_user
     if user.role != 'staff':
         return jsonify(message='Access forbidden: Not a staff member'), 403
-    
+
     data = request.json
     if not data or 'request_id' not in data:
         return jsonify(message='Missing required field: request_id'), 400
-    
+
     req = Request.query.get(data['request_id'])
     if not req:
         return jsonify(message='Request not found'), 404
-    
+
     staff = Staff.query.get(user.staff_id)
     if not staff:
         return jsonify(message='Staff member not found'), 404
-    
+
     try:
         req.accept(staff)
         return jsonify({
@@ -69,21 +69,21 @@ def deny_request_action_new():
     user = jwt_current_user
     if user.role != 'staff':
         return jsonify(message='Access forbidden: Not a staff member'), 403
-    
+
     data = request.json
     if not data or 'request_id' not in data:
         return jsonify(message='Missing required field: request_id'), 400
-    
+
     req = Request.query.get(data['request_id'])
     if not req:
         return jsonify(message='Request not found'), 404
-    
+
     staff = Staff.query.get(user.staff_id)
     if not staff:
         return jsonify(message='Staff member not found'), 404
-    
+
     reason = data.get('reason', None)
-    
+
     try:
         req.deny(staff, reason)
         return jsonify({
@@ -96,40 +96,6 @@ def deny_request_action_new():
         db.session.rollback()
         return jsonify(message=f'Error denying request: {str(e)}'), 500
 
-@staff_views.route('/api/accept_request', methods=['PUT'])
-@jwt_required()
-def accept_request_action():
-    user = jwt_current_user
-    if user.role != 'staff':
-        return jsonify(message='Access forbidden: Not a staff member'), 403
-    data = request.json
-    if not data or 'request_id' not in data:
-        return jsonify(message='Invalid request data'), 400
-    # Logic to accept the request goes here
-    req = Request.query.get(data['request_id'])
-    if not req:
-        return jsonify(message='Request not found'), 404
-
-    process_request_approval(user.staff_id, data['request_id'])
-
-    return jsonify(message='Request accepted'), 200
-
-@staff_views.route('/api/deny_request', methods=['PUT'])
-@jwt_required()
-def deny_request_action():
-    user = jwt_current_user
-    if user.role != 'staff':
-        return jsonify(message='Access forbidden: Not a staff member'), 403
-    data = request.json
-    if not data or 'request_id' not in data:
-        return jsonify(message='Invalid request data'), 400    
-    # Logic to deny the request goes here
-    req = Request.query.get(data['request_id'])
-    if not req:
-        return jsonify(message='Request not found'), 404    
-    process_request_denial(user.staff_id, data['request_id'])
-    return jsonify(message='Request denied'), 200
-
 @staff_views.route('/api/delete_request', methods=['DELETE'])
 @jwt_required()
 def delete_request_action():
@@ -139,7 +105,7 @@ def delete_request_action():
     data = request.json
     if not data or 'request_id' not in data:
         return jsonify(message='Invalid request data'), 400
-    # Logic to delete the request goes here
+    # Logic to delete the request 
     req = Request.query.get(data['request_id'])
     if not req:
         return jsonify(message='Request not found'), 404
@@ -153,7 +119,7 @@ def delete_logs_action():
     user = jwt_current_user
     if user.role != 'staff':
         return jsonify(message='Access forbidden: Not a staff member'), 403
-    # Logic to delete logs goes here
+    # Logic to delete logs 
     data = request.json
     if not data or 'log_id' not in data:
         return jsonify(message='Invalid request data'), 400
