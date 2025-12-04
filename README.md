@@ -134,3 +134,7 @@ Task: #21 Final Use Case Documentation
 Branch: task/26-Final-API-Specification
 Member: Britney Romain
 Task: #26 Final API Specification
+
+Branch: task/27-Project-Report
+Member: Nailah Lewis
+Task: #27 Project Report
