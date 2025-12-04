@@ -119,3 +119,7 @@ Task: #22 Final System Design Documentation
 Branch: task25-postman collection+testrun
 Memember: Dominique Chotack
 Task: #25 full postman run
+
+Branch:task28-trello governance
+Member: Dominique Chotack
+Task:#28 trello governance
