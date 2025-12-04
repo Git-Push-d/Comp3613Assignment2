@@ -1,0 +1,25 @@
+{
+	"name": "Task25_Environment",
+	"values": [
+		{
+			"key": "base_url",
+			"value": "https://5ba4a972-2f86-490a-bc8e-4ed35e14ce6b-00-3f5q4u5tyibrq.picard.replit.dev",
+			"enabled": true
+		},
+		{
+			"key": "student_token",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "staff_token",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "request_id",
+			"value": "",
+			"enabled": true
+		}
+	]
+}

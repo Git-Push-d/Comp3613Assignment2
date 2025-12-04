@@ -1,0 +1,369 @@
+{
+  "info": {
+    "name": "Task25_Rewards_Test",
+    "description": "Simple collection for Task 25 - Rewards API Test (Observer Pattern)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Create Student",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Student created successfully', function() {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 409]);",
+              "});",
+              "",
+              "pm.test('Response has message', function() {",
+              "    var data = pm.response.json();",
+              "    pm.expect(data).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"teststudent\",\n    \"email\": \"teststudent@test.com\",\n    \"password\": \"testpass123\"\n}"
+        },
+        "url": "{{base_url}}/api/create_Student"
+      }
+    },
+    {
+      "name": "2. Create Staff",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Staff created successfully', function() {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 409]);",
+              "});",
+              "",
+              "pm.test('Response has message', function() {",
+              "    var data = pm.response.json();",
+              "    pm.expect(data).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"teststaff\",\n    \"email\": \"teststaff@test.com\",\n    \"password\": \"staffpass123\"\n}"
+        },
+        "url": "{{base_url}}/api/create_Staff"
+      }
+    },
+    {
+      "name": "3. Login Student",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Login successful - Status 200', function() {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response has access_token', function() {",
+              "    var data = pm.response.json();",
+              "    pm.expect(data).to.have.property('access_token');",
+              "    pm.environment.set('student_token', data.access_token);",
+              "    console.log('STUDENT TOKEN SAVED:', data.access_token.substring(0,30) + '...');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"teststudent\",\n    \"password\": \"testpass123\"\n}"
+        },
+        "url": "{{base_url}}/api/login"
+      }
+    },
+    {
+      "name": "4. Student Makes Request (15 hours)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Request created - Status 200 or 201', function() {",
+                    "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "",
+              "pm.test('Response has request id', function() {",
+              "    var data = pm.response.json();",
+              "    pm.expect(data).to.have.property('requestID');",
+              "    pm.environment.set('request_id', data.requestID);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{student_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"hours\": 15\n}"
+        },
+        "url": "{{base_url}}/api/make_request"
+      }
+    },
+    {
+      "name": "5. Login Staff",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Login successful - Status 200', function() {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response has access_token', function() {",
+              "    var data = pm.response.json();",
+              "    pm.expect(data).to.have.property('access_token');",
+              "    pm.environment.set('staff_token', data.access_token);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"teststaff\",\n    \"password\": \"staffpass123\"\n}"
+        },
+        "url": "{{base_url}}/api/login"
+      }
+    },
+    {
+      "name": "6. Staff Views Pending Requests",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Get pending requests - Status 200', function() {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response has pending requests', function() {",
+              "    var data = pm.response.json();",
+              "    pm.expect(data).to.have.property('requests');",
+              "    pm.expect(data.requests).to.be.an('array');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{staff_token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/pending_requests"
+      }
+    },
+    {
+      "name": "7. Staff Approves Request (Triggers Observer)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Request approved - Status 200', function() {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response confirms approval', function() {",
+              "    var data = pm.response.json();",
+              "    pm.expect(data).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{staff_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"request_id\": {{request_id}}\n}"
+        },
+        "url": "{{base_url}}/api/approve_request"
+      }
+    },
+    {
+      "name": "8. Check Accolades (Observer Result)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var tokenUsed = pm.environment.get('student_token');",
+              "console.log('Using student_token:', tokenUsed ? tokenUsed.substring(0,30) + '...' : 'NOT SET!');",
+              "",
+              "pm.test('Get accolades - Status 200', function() {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('OBSERVER PATTERN: Accolades awarded automatically', function() {",
+              "    var data = pm.response.json();",
+              "    pm.expect(data).to.be.an('array');",
+              "    pm.expect(data.length).to.be.greaterThan(0);",
+              "    console.log('Accolades received:', JSON.stringify(data));",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{student_token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/accolades"
+      }
+    },
+    {
+      "name": "9. Check Activity History (Observer Result)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Get activity history - Status 200', function() {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('OBSERVER PATTERN: Activity logged automatically', function() {",
+              "    var data = pm.response.json();",
+              "    pm.expect(data).to.have.property('activities');",
+              "    pm.expect(data.activities).to.be.an('array');",
+              "    console.log('Activity history:', JSON.stringify(data));",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{student_token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/activity_history"
+      }
+    },
+    {
+      "name": "10. Check Leaderboard",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Get leaderboard - Status 200', function() {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Leaderboard has entries', function() {",
+              "    var data = pm.response.json();",
+              "    pm.expect(data).to.be.an('array');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{student_token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/leaderboard"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:5000"
+    }
+  ]
+}

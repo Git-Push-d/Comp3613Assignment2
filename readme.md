@@ -69,3 +69,53 @@ pytest -v
 - Flask-Cors 3.0.10
 - Flask-Admin 1.6.1
 - Gunicorn 20.1.0
+
+## Project Contributors
+
+Branch: task/2-setup-git-repository  
+Member: Nailah Lewis
+Task: #2 Setup Git Repository
+
+Branch: task/1 setup trello board 
+Member: Dominique Chotack
+Task: #1 Trello Board Setup 
+
+Branch: task/3 choose design pattern 
+Member: Reena Sookdar
+Task: #3 Choose Design Pattern 
+
+Branch: task/5 update uml diagram 
+Member: Reena Sookdar 
+Task #5 Update UML Diagram
+
+Branch: task/4-update-use-case-diagram
+Member: Britney Romain
+Task: #4 Update Use Case Diagram
+
+Branch: task/6-sprint1report
+Member: Britney Romain
+Task #6 Sprint 1 Report
+
+Branch: task/16-API-Specification-for-Sprint-2
+Member: Nailah Lewis
+Task #16 API Specification for Sprint 2
+
+Branch: task/17-diagram-for-system-design
+Member: Reena Sookdar
+Task #17 Diagram for System Design
+
+Branch: task/18-update-model-diagram
+Member: Reena Sookdar 
+Task: #18 Update Model Diagram
+
+Branch: task/19-review-use-case-diagram
+Member: Britney Romain
+Task: #19 Review Use Case Diagram
+
+Branch: task/22-final-system-design-documentation 
+Member: Reena Sookdar
+Task: #22 Final System Design Documentation 
+
+Branch: task25-postman collection+testrun
+Memember: Dominique Chotack
+Task: #25 full postman run
